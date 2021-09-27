@@ -1,0 +1,45 @@
+model Customer {
+    id               String       @id @default(cuid())
+    last_name        String
+    first_name       String
+    email            String       @unique
+    password         String
+    email_confirm    Boolean      @default(false)
+    is_delete        Boolean      @default(false)
+    phone_number     String       @unique
+    last_login       String?
+    payment_type     Payment_type @default(Cash)
+    customer_card    Card[]
+    customer_address Address[]
+
+    @@map(name: "customer")
+}
+
+enum Payment_type {
+    Card
+    Paypal
+    Cash
+}
+
+model Card {
+    id          String   @id @default(cuid())
+    card_number Int      @unique
+    expiry_date DateTime
+    cvv         Int
+    customer    Customer @relation(fields: [customer_id], references: [id])
+    customer_id String
+
+    @@map(name: "cards")
+}
+
+model Address {
+    id          String   @id @default(cuid())
+    number      Int
+    street      String
+    city        String
+    state       String
+    customer    Customer @relation(fields: [customer_id], references: [id])
+    customer_id String
+
+    @@map(name: "addresses")
+}
