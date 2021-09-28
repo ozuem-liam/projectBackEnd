@@ -1,11 +1,7 @@
 import prisma from '../interfaces/client';
-import messages from '../translation/messages.json';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import * as sharedService from './appService';
 import { admins } from '../middlewares/admin';
-import {jwtTokens} from '../utils/jwt-helpers';
-dayjs.extend(duration);
+import { jwtTokens } from '../utils/jwt-helpers';
+
 
 export const loginAdmin = async ({
   email,
@@ -17,20 +13,20 @@ export const loginAdmin = async ({
   accessToken?: any;
 }> => {
   const admin = admins.filter((admin) => {
-    return admin.email = email;
+    return (admin.email = email);
   })[0];
-  
+
   if (!admin) {
     const message = 'This admin does not exist';
     return { isSuccess: false, message };
-  } 
+  }
   if (password !== admin.password) {
     const message = 'Invalid credentials';
     return { isSuccess: false, message };
-  } 
+  }
   const id = admin;
   // sign a token
-  const {accessToken} = jwtTokens(id);
+  const { accessToken } = jwtTokens(id);
   const message = 'Success';
   return { isSuccess: true, message, admin, accessToken };
 };
@@ -49,28 +45,26 @@ export const createProduct = async ({
   error?: any;
 }> => {
   try {
-    const created_at = Date.now().toString();
     const product = await prisma.product.create({
       data: {
         name,
         desc,
         price,
         is_delete,
-        created_at: created_at,
         categories: {
           create: [
             {
-              category_name: category_name,
-              sku: sku,
+              category_name,
+              sku,
             },
           ],
         },
       },
     });
-    
     const message = 'Product successfully added';
     return { isSuccess: true, data: product, message };
   } catch (error) {
+    console.log(error);
     return { isSuccess: false, error };
   }
 };
@@ -155,7 +149,7 @@ export const getDispatchers = async (): Promise<
   try {
     const dispatcher = await prisma.dispatcher.findMany({
       include: {
-        locations: true
+        locations: true,
       },
     });
     return { isSuccess: true, data: dispatcher };
@@ -164,16 +158,16 @@ export const getDispatchers = async (): Promise<
   }
 };
 
-export const getOneDispatchers = async (id: string): Promise<
-  { isSuccess: boolean; data?: any } | any
-> => {
+export const getOneDispatchers = async (
+  id: string,
+): Promise<{ isSuccess: boolean; data?: any } | any> => {
   try {
     const dispatcher = await prisma.dispatcher.findMany({
       where: {
         id: id,
       },
       include: {
-        locations: true
+        locations: true,
       },
     });
     return { isSuccess: true, data: dispatcher };
@@ -181,23 +175,39 @@ export const getOneDispatchers = async (id: string): Promise<
     return { isSuccess: false, error };
   }
 };
+
 export const updateProduct = async ({
   id,
   name,
   desc,
   price,
   is_delete,
-}): Promise<{ isSuccess: boolean; data?: any; error?: any }> => {
+  category_name,
+  sku,
+}): Promise<{
+  isSuccess: boolean;
+  data?: any;
+  error?: any;
+  message?: string;
+}> => {
   try {
     const data = await prisma.product.update({
       where: {
         id: id,
       },
       data: {
-        name: name,
-        desc: desc,
-        price: price,
-        is_delete: is_delete,
+        name,
+        desc,
+        price,
+        is_delete,
+        categories: {
+          create: [
+            {
+              category_name,
+              sku,
+            },
+          ],
+        },
       },
     });
     return { isSuccess: true, data };

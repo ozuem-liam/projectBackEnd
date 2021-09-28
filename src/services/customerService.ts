@@ -2,6 +2,7 @@ import prisma from '../interfaces/client';
 import messages from '../translation/messages.json';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { jwtTokens } from '../utils/jwt-helpers';
 import * as sharedService from './appService';
 
 const EMAIL_CONFIRM = 'EmailConfirmation';
@@ -16,6 +17,7 @@ export const loginUser = async ({
   message: string;
   customer?: any;
   destination?: string;
+  accessToken?: string;
 }> => {
   const customer = await prisma.customer.findUnique({
     where: { email: email },
@@ -26,13 +28,16 @@ export const loginUser = async ({
     hashPassword,
   );
   if (isMatch) {
+    // sign a token
+    const { accessToken } = jwtTokens(email);
+    console.log(accessToken);
     let destination = 'dashboard',
       message: string = messages['ACT-LOGIN-SUCCESS'],
       isSuccess = true;
     const data = { last_login: Date.now().toString() };
     //save customer to DB
     prisma.customer.update({ where: { email: email }, data });
-    return { isSuccess, customer, destination, message };
+    return { isSuccess, customer, destination, message, accessToken };
   } else {
     let message = messages['ACT-INVALID-LOGIN'];
     return { isSuccess: false, message };
@@ -154,8 +159,7 @@ export const createAddress = async ({
   isSuccess: boolean;
   data?: any;
   message?: string;
-  error?
-: any;
+  error?: any;
 }> => {
   try {
     const address = await prisma.address.create({
@@ -228,4 +232,38 @@ export const updateAddress = async ({
   } catch (error) {
     return { isSuccess: false, error };
   }
+};
+
+export const addNotification = async ({
+  receiver_id,
+  subject,
+  content,
+  destination,
+  is_read,
+  receiver_type,
+}) => {
+  const notification = await prisma.notification.create({
+    data: {
+      subject,
+      content,
+      destination,
+      is_read,
+      receiver_type,
+      receiver_id,
+    },
+  });
+   const customer = await prisma.customer.update({
+      where: {
+        id: notification.receiver_id
+      },
+      data: {
+        notification_id: notification.id,
+        },
+    });
+
+  if (notification && customer)
+    return { isSuccess: true, data: notification };
+
+  const message = messages['ADD-NOTIFICATION-ERROR'];
+  return { isSuccess: false, message };
 };

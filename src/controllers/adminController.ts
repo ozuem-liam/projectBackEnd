@@ -75,26 +75,9 @@ export const getProducts = async (request: any, response: any) => {
 };
 
 // Update Product
-export const updateProduct = async (
-  request: {
-    body: {
-      id: string;
-      name: string;
-      desc: string;
-      price: string;
-      is_delete: boolean;
-    };
-  },
-  response: any,
-) => {
-  const { id, name, desc, price, is_delete } = request.body;
-  const { isSuccess, data } = await adminService.updateProduct({
-    id,
-    name,
-    desc,
-    price,
-    is_delete,
-  });
+export const updateProduct = async (request: { body: any; }, response: any) => {
+  const updateProduct = request.body;
+  const { isSuccess, data } = await adminService.updateProduct(updateProduct);
   if (isSuccess) {
     return sendSuccess({ data, response });
   } else {

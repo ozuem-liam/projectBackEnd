@@ -5,6 +5,7 @@ import { sendEmail } from '../utils/EmailClient';
 import jwt from 'jsonwebtoken';
 import { prisma } from '.prisma/client';
 import { encrypt } from '../utils/encryption';
+import HttpStatusCode from '../models/HttpStatusCode';
 // import { authenticateToken } from '../middlewares/auth';
 const appConfig = require('../configs/config');
 // import  HttpStatusCode from '../models/HttpStatusCode';
@@ -44,12 +45,12 @@ export const createCustomer = async (request, response) => {
   if (isSuccess) {
     // JWT
     let tokens = jwtTokens(customer);
-    sendEmail(
-      customer.email,
-      'ozuemdw@gmail.com',
-      'Confirm Email',
-      `Click link to confirm email http://localhost:5000/${tokens.accessToken}`,
-    );
+    // sendEmail(
+    //   customer.email,
+    //   appConfig.mailGun.sender,
+    //   'Confirm Email',
+    //   `Click link to confirm email http://localhost:5000/${tokens.accessToken}`,
+    // );
     // response.cookie('refresh_token', tokens.accessToken, {
     //   httpOnly: true,
     // });
@@ -117,4 +118,13 @@ const loginSetUp = ({ response, customer }) => {
   //Generate auth token and save to cookie
   const authToken = encrypt(JSON.stringify({ id, email, payment_type }));
   return (response.cookie = (appConfig.authName, authToken));
+};
+
+export const addNotification = async (request, response) => {
+  const notification = request.body;
+  const { isSuccess, data, message } = await customerService.addNotification(notification);
+  if (isSuccess) {
+    return sendSuccess({ response, data });
+  }
+  return sendError({ response, message, code: HttpStatusCode.SERVER_ERROR });
 };

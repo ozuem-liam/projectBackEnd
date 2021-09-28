@@ -5,6 +5,7 @@
     "rootDir": "./src",                                  
     "lib": ["esnext"],                                        
     "module": "commonjs",
+    "outDir": "./dist",
     "resolveJsonModule": true,                                
     "noImplicitAny": false,                                
     "moduleResolution": "node",                                           

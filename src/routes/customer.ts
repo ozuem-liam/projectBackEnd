@@ -7,6 +7,25 @@ import {
   updateAddressSchema,
 } from '../databases/schemas/customer';
 
+const postAddressOpts = {
+  schema: postAddressSchema,
+  handler: customer.customer.createAddress,
+};
+
+const softdeleteCustomerOpts = {
+  schema: softdeleteCustomerSchema,
+  handler: customer.customer.softdeleteCustomer,
+};
+
+const updateAddressOpts = {
+  schema: updateAddressSchema,
+  handler: customer.customer.updateAddress,
+};
+
+const getAddressOpts = {
+  handler: customer.customer.getAddresses,
+};
+
 export default function (fastify, opt, next) {
   fastify.post(
     '/',
@@ -18,24 +37,28 @@ export default function (fastify, opt, next) {
     loginCustomerSchema,
     customer.customer.loginUser,
   );
-  fastify.patch(
-    '/delete',
-    softdeleteCustomerSchema,
-    customer.customer.softdeleteCustomer,
-  );
-  fastify.post(
-    '/address',
-    postAddressSchema,
-    customer.customer.createAddress,
-  );
-  fastify.get(
-    '/address/:customer_id',
-    customer.customer.getAddresses,
-  );
-  fastify.patch(
-    '/address/update',
-    updateAddressSchema,
-    customer.customer.updateAddress,
-  );
+
+  fastify
+    .register(require('fastify-auth'))
+    .after(() => privateCustomerRoutes(fastify));
   next();
 }
+
+const privateCustomerRoutes = (fastify: any) => {
+  fastify.patch('/delete', {
+    preHandler: fastify.auth([fastify.verifyToken]),
+    ...softdeleteCustomerOpts,
+  });
+  fastify.post('/address', {
+    preHandler: fastify.auth([fastify.verifyToken]),
+    ...postAddressOpts,
+  });
+  fastify.get('/address/:customer_id', {
+    preHandler: fastify.auth([fastify.verifyToken]),
+    ...getAddressOpts,
+  });
+  fastify.patch('/address/update', {
+    preHandler: fastify.auth([fastify.verifyToken]),
+    ...updateAddressOpts,
+  });
+};

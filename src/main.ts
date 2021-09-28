@@ -1,6 +1,6 @@
+import { verifyToken } from './middlewares/auth';
 const fastify = require('fastify')({ logger: true });
 require('dotenv').config();
-import { verifyToken } from './middlewares/auth';
 
 //api doc
 fastify.register(require('fastify-swagger'), {

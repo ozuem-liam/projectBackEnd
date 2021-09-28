@@ -26,6 +26,9 @@ const getOneDispatcherOpts = {
 const getDispatcherOpts = {
   handler: admin.admin.getDispatchers,
 };
+const addNotificationOpts = {
+  handler: admin.customer.addNotification,
+};
 export default function (fastify, opt, next) {
   fastify.patch('/auth/login', admin.admin.loginAdmin); // login as Admin
   //   fastify.get('/orders', customer.customer.createAddress); // view all recent orders
@@ -33,11 +36,11 @@ export default function (fastify, opt, next) {
   //   fastify.post('/orders/send/:dispatcher_id', customer.customer.updateAddress); // send to rider available in a particular location.
   fastify
     .register(require('fastify-auth'))
-    .after(() => privatePostRoutes(fastify));
+    .after(() => privateAdminRoutes(fastify));
   next();
 }
 
-const privatePostRoutes = (fastify: any) => {
+const privateAdminRoutes = (fastify: any) => {
   fastify.post('/', {
     preHandler: fastify.auth([fastify.verifyToken]),
     ...postProductOpts,
@@ -63,4 +66,9 @@ const privatePostRoutes = (fastify: any) => {
     preHandler: fastify.auth([fastify.verifyToken]),
     ...getOneDispatcherOpts,
   }); // view one riders
+  
+  fastify.post('/notification', {
+    preHandler: fastify.auth([fastify.verifyToken]),
+    ...addNotificationOpts,
+  });
 };
