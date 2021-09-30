@@ -1,14 +1,11 @@
 import * as customerService from '../services/customerService';
 import { sendSuccess, sendError } from './appController';
-import { jwtTokens } from '../utils/jwt-helpers';
 import { sendEmail } from '../utils/EmailClient';
-import jwt from 'jsonwebtoken';
-import { prisma } from '.prisma/client';
 import { encrypt } from '../utils/encryption';
 import HttpStatusCode from '../models/HttpStatusCode';
-// import { authenticateToken } from '../middlewares/auth';
-const appConfig = require('../configs/config');
-// import  HttpStatusCode from '../models/HttpStatusCode';
+import appConfig from '../configs/config';
+
+const sender: any = appConfig.mailGun.sender;
 
 export const loginUser = async (request, response) => {
   const data = request.body;
@@ -18,17 +15,13 @@ export const loginUser = async (request, response) => {
     message,
     customer = {},
     destination = '',
+    accessToken = ''
   } = resp;
   if (isSuccess) {
     if (destination == 'dashboard') {
       loginSetUp({ response, customer });
     }
-    //JWT
-    // let tokens = jwtTokens(customer);
-    // const token = tokens.accessToken;
-    // authenticateToken(token);
-    // let token = tokens.accessToken;
-    return sendSuccess({ response, message, data: { destination } });
+    return sendSuccess({ response, message, data: { destination, accessToken } });
   }
   return sendError({ response, message });
 };
@@ -43,17 +36,13 @@ export const createCustomer = async (request, response) => {
     destination = '',
   } = resp;
   if (isSuccess) {
-    // JWT
-    let tokens = jwtTokens(customer);
-    // sendEmail(
-    //   customer.email,
-    //   appConfig.mailGun.sender,
-    //   'Confirm Email',
-    //   `Click link to confirm email http://localhost:5000/${tokens.accessToken}`,
-    // );
-    // response.cookie('refresh_token', tokens.accessToken, {
-    //   httpOnly: true,
-    // });
+    sendEmail(
+      customer.email,
+      sender,
+      'Thank You Email',
+      'Thank you for registering',
+    );
+
     return sendSuccess({ response, message, data: { destination } });
   }
   return sendError({ response, message });

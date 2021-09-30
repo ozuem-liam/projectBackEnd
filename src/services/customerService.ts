@@ -30,7 +30,6 @@ export const loginUser = async ({
   if (isMatch) {
     // sign a token
     const { accessToken } = jwtTokens(email);
-    console.log(accessToken);
     let destination = 'dashboard',
       message: string = messages['ACT-LOGIN-SUCCESS'],
       isSuccess = true;
@@ -56,8 +55,7 @@ export const createCustomer = async ({
   customer_address,
   stage,
   id,
-}): Promise<
-  | {
+}): Promise<{
       isSuccess: boolean;
       message: string;
       customer?: any;
@@ -252,14 +250,14 @@ export const addNotification = async ({
       receiver_id,
     },
   });
-   const customer = await prisma.customer.update({
-      where: {
-        id: notification.receiver_id
-      },
-      data: {
-        notification_id: notification.id,
-        },
-    });
+  const customer = await prisma.customer.update({
+    where: {
+      id: notification.receiver_id,
+    },
+    data: {
+      notification_id: notification.id,
+    },
+  });
 
   if (notification && customer)
     return { isSuccess: true, data: notification };

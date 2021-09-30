@@ -1,6 +1,8 @@
 import { verifyToken } from './middlewares/auth';
+import * as dotenv from 'dotenv';
 const fastify = require('fastify')({ logger: true });
-require('dotenv').config();
+
+dotenv.config({ path: __dirname + '/.env' });
 
 //api doc
 fastify.register(require('fastify-swagger'), {
@@ -26,7 +28,6 @@ const start = async () => {
     const address = await fastify.listen(5000);
     console.log(`TEST is running on ${address}`);
   } catch (err) {
-    console.error(err);
     process.exit(1);
   }
 };

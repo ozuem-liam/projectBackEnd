@@ -21,7 +21,7 @@ const sendEmail = (
   };
 return mg.messages().send(data, function (error, body) {
     if (error) {
-      console.log('ERROR=_----', error);
+      return error
     }
     console.log('BODY=---+', body);
   });

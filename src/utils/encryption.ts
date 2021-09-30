@@ -1,12 +1,15 @@
 import crypto from 'crypto';
 import appConfig from '../configs/config';
 
+const secret = "secret"
+let key = crypto.createHash('sha256').update(String(secret)).digest('base64').substr(0, 32);
+
 export const encrypt = (text: string) => {
   const ivLength = 16,
     iv = crypto.randomBytes(ivLength),
     cipher = crypto.createCipheriv(
       'aes-256-cbc',
-      Buffer.from(appConfig.encryptionKey || ''),
+      key,
       iv,
     );
   let encrypted = cipher.update(text);

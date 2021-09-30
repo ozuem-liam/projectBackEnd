@@ -1,7 +1,9 @@
-require('dotenv').config();
+import * as dotenv from 'dotenv';
 
+dotenv.config({ path: __dirname + '/.env' });
 export default {
   serverPort: process.env.PORT || 8080,
+  accessKey: process.env.ACCESS_TOKEN_SECRET,
   database: {
     endPoint: process.env.DB_URL,
   },

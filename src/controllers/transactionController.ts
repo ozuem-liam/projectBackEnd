@@ -1,5 +1,7 @@
+import { request } from 'http';
 import * as transactionService from '../services/transactionService';
 import { sendSuccess, sendError } from './appController';
+import paypal from 'paypal-rest-sdk';
 
 // Get Products
 export const getProducts = async (request: any, response: any) => {
@@ -34,3 +36,52 @@ export const addToOrder = async (request, response) => {
     return sendError({ response });
   }
 };
+
+
+paypal.configure({
+  mode: 'sandbox',
+  client_id:
+    'ATQKkQiz9srm6PaJqMia4ydBdoss7P664MIoFqtoraDFHTBBZNrgl7pNXWfAeIFzHE7tCSJ6uVXGil3-',
+  client_secret:
+    'ELg0Hwd7EFZZMKrs6X1P1MfdA4eNDpo5_2GNJb2Wiv5qO9WVZHqbJMn9kRvEwrK3KS2yZ__VHZHlrsg_',
+});
+
+
+export const payPalPayment = async (request, response) => {
+  const create_payment_json = {
+    "intent": "sale",
+    "payer": {
+      "payment_method": "paypal"
+    },
+    "redirect_urls": {
+      "return_url": "http://127.0.0.1:5000/success",
+      "cancel_url": "http://127.0.0.1:5000/cancel"
+    },
+    "transactions": [{
+      "item_list": {
+        "items": [{
+          "name": "item",
+          "sku": "item",
+          "price": "1.00",
+          "currency": "USD",
+          "quantity": 1
+        }]
+      },
+      "amount": {
+        "currency": "USD",
+        "total": "1.00"
+      },
+      "description": "This is the payment description."
+    }]
+  };
+
+  paypal.payment.create(create_payment_json, (error, payment) => {
+    if (error) {
+      throw error;
+    } else {
+      console.log("Create Payment Response");
+      console.log(payment);
+      response.send('test');
+    }
+  })
+}
