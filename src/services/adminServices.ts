@@ -64,7 +64,6 @@ export const createProduct = async ({
     const message = 'Product successfully added';
     return { isSuccess: true, data: product, message };
   } catch (error) {
-    console.log(error);
     return { isSuccess: false, error };
   }
 };

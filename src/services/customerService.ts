@@ -118,7 +118,7 @@ export const createCustomer = async ({
       return { isSuccess: false, message, destination };
     }
   } catch (error) {
-    console.log(error);
+   return error
   }
 };
 

@@ -79,8 +79,6 @@ export const payPalPayment = async (request, response) => {
     if (error) {
       throw error;
     } else {
-      console.log("Create Payment Response");
-      console.log(payment);
       response.send('test');
     }
   })

@@ -16,10 +16,8 @@ export const loginDispatcher = async (request, response) => {
 
   if (isSuccess) {
     //JWT
-    let tokens = jwtTokens(dispatcher);
-    console.log(tokens);
-    // let token = tokens.accessToken;
-    return sendSuccess({ response, message, data: { destination } });
+    let token = jwtTokens(dispatcher);
+    return sendSuccess({ response, message, data: { destination, token } });
   }
   return sendError({ response, message });
 };

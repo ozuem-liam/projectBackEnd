@@ -27,7 +27,6 @@ export const loginDispatcher = async ({
       password,
       hashPassword,
     );
-    console.log('gotit', isMatch);
     if (isMatch) {
       let destination = 'dashboard',
         message: string = messages['ACT-LOGIN-SUCCESS'];
