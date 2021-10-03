@@ -47,7 +47,7 @@ export const addToOrder = async (
       },
     });
     if (product) {
-      const quantity: any = addQuantity();
+      const quantity: any = addQuantity(x);
       const product_details: any = {
         name: product.name,
         desc: product.desc,
@@ -75,7 +75,7 @@ export const addToOrder = async (
   }
 };
 
-const addQuantity = () => {
+const addQuantity = (x: number) => {
   let x = 1;
   x = ++x;
   return x;
