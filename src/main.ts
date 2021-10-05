@@ -15,7 +15,6 @@ fastify.register(require('fastify-swagger'), {
 
 //Register middlewares
 fastify.register(require('./middlewares/middleware'));
-// fastify.register(require('./middlewares/auth'));
 
 fastify.decorate('verifyToken', verifyToken);
 

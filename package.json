@@ -9,6 +9,7 @@
     "start:dev": "nodemon src/main.ts",
     "test": "jest --watch",
     "build": "tsc -p tsconfig.json",
+    "migrate": "npx prisma migrate dev",
     "migration-dev": "ts-node ./src/prisma/generator.ts && npx prisma migrate dev",
     "migration": "ts-node ./src/prisma/generator.ts && npx prisma migrate deploy"
   },
