@@ -23,6 +23,7 @@ export const cookieOption = {
     sameSite: config.development ? 'Lax' : 'Strict',
   },
 };
+
 export const rateLimit = {
   max: 50,
   timeWindow: '1 minute',

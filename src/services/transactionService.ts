@@ -47,12 +47,10 @@ export const addToOrder = async (
       },
     });
     if (product) {
-      const quantity: any = addQuantity(x);
       const product_details: any = {
         name: product.name,
         desc: product.desc,
         price: product.price,
-        quantity: quantity,
       };
       // update product to cart
       const addToOrder = await prisma.order.create({
@@ -75,11 +73,6 @@ export const addToOrder = async (
   }
 };
 
-const addQuantity = (x: number) => {
-  let x = 1;
-  x = ++x;
-  return x;
-};
 // remove product from cart
 
 // checkout to order and empty cart and start delivery time
